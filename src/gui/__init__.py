@@ -15,7 +15,7 @@ def create(event_bus: EventBus) -> None:
     builder = MenuBuilder.create(GimpToolkit, handler)
     factory = AppMenuFactory(builder, Channel)
     indicator = AppIndicator.Indicator.new(name, icon, category)
-    mpris_media_player = MprisMediaPlayer(name, event_bus)
+    mpris_media_player = MprisMediaPlayer(name, event_bus, desktop_entry_name='rundfunk_rundfunk')
 
     mpris_media_player.publish()
     indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)

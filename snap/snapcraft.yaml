@@ -1,6 +1,6 @@
 name: rundfunk
 base: core18
-version: '2.1.1'
+version: '2.1.2'
 summary: Unofficial Deutschlandradio GNU/Linux client
 description: |
   Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio channels, Deutschlandfunk, Deutschlandfunk

@@ -18,6 +18,15 @@ class MprisPlayer:
 
     dbus = """
     <node>
+      <interface name="org.mpris.MediaPlayer2">
+        <property name="Identity" type="s" access="read"/>
+        <property name="DesktopEntry" type="s" access="read"/>
+        <property name="SupportedMimeTypes" type="as" access="read"/>
+        <property name="SupportedUriSchemes" type="as" access="read"/>
+        <property name="HasTrackList" type="b" access="read"/>
+        <method name="Raise"/>
+        <method name="Quit"/>
+      </interface>
       <interface name="org.mpris.MediaPlayer2.Player">
         <property name="CanPlay" type="b" access="read"/>
         <property name="CanPause" type="b" access="read"/>
@@ -39,11 +48,17 @@ class MprisPlayer:
     CanGoNext = True
     CanGoPrevious = True
     PlaybackStatus = PlaybackStatus.STOPPED.value
+    Identity = 'Rundfunk'
+    DesktopEntry = 'rundfunk'
+    SupportedMimeTypes = []
+    SupportedUriSchemes = []
+    HasTrackList = False
     PropertiesChanged = signal()
     _metadata = {'title': '', 'artist': 'Rundfunk'}
 
-    def __init__(self, main_interface: str, event_bus: EventBus) -> None:
+    def __init__(self, main_interface: str, event_bus: EventBus, desktop_entry_name: str) -> None:
         self._interface: str = f'{main_interface}.Player'
+        self.DesktopEntry = desktop_entry_name
         self._event_bus = event_bus
 
         event_bus.subscribe(OnPlay(self._on_play))
@@ -108,6 +123,12 @@ class MprisPlayer:
     def _update_title(self, title: str) -> None:
         self._metadata['title'] = title
         self._update({'Metadata': self.Metadata})
+
+    def Raise(self) -> None:
+        pass
+
+    def Quit(self) -> None:
+        pass
 
     def _update(self, properties: dict) -> None:
         self.PropertiesChanged(self._interface, properties, [])
