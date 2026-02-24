@@ -1,5 +1,5 @@
 name: rundfunk
-base: core18
+base: core20
 version: '2.1.2'
 summary: Unofficial Deutschlandradio GNU/Linux client
 description: |
@@ -9,12 +9,23 @@ description: |
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+
 apps:
   rundfunk:
     environment:
-      PYTHONPATH: $SNAP
-    command: python3 $SNAP/src/main.py
-    extensions: [ gnome-3-28 ]
+      PYTHONPATH: >-
+        $SNAP:$SNAP/gnome-platform/usr/lib/python3/dist-packages:$SNAP/usr/lib/python3/dist-packages
+      GIO_USE_PROXY_RESOLVER: libproxy
+      GI_TYPELIB_PATH: >-
+        $SNAP/gnome-platform/usr/lib/girepository-1.0:$SNAP/gnome-platform/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/girepository-1.0:$SNAP/usr/lib/girepository-1.0:$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/girepository-1.0
+      LD_LIBRARY_PATH: >-
+        $SNAP/gnome-platform/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/gnome-platform/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/gnome-platform/usr/lib:$SNAP/gnome-platform/lib:$SNAP/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/lib:$SNAP/usr/lib
+    command: src/main.py
+    extensions: [gnome-3-38]
     plugs:
       - audio-playback
       - network
@@ -26,17 +37,41 @@ parts:
     plugin: dump
     source: ./src
     organize:
-      '*' : src/
+      "*": src/
+
   rundfunk:
-    plugin: python
-    python-version: python3
-    python-packages:
-      - pydbus>=0.6.0, <0.7.0
+    plugin: nil
     stage-packages:
+      - python3-pydbus
       - python3-gst-1.0
       - gir1.2-appindicator3-0.1
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
       - gstreamer1.0-plugins-bad
+      - libglu1-mesa
+      - freeglut3
       - libgpm2
       - libslang2
+
+  cleanup:
+    after:
+      - copy-src
+      - rundfunk
+      - gnome-3-38-extension
+    plugin: nil
+    build-snaps:
+      - core20
+      - gtk-common-themes
+      - gnome-3-38-2004
+    override-prime: |
+      set -eu
+      for snap in "core20" "gtk-common-themes" "gnome-3-38-2004"; do
+        cd "/snap/$snap/current"
+        find . \( -type f -o -type l \) | while read -r path; do
+          target="$SNAPCRAFT_PRIME/$path"
+          if [ -d "$target" ]; then
+            continue
+          fi
+          rm -f "$target"
+        done
+      done
