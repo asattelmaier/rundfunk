@@ -1,0 +1,92 @@
+name: Main Snap
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/main-snap.yml"
+      - "snap/**"
+      - "src/**"
+      - "requirements.txt"
+  workflow_dispatch:
+    inputs:
+      release_channel:
+        description: "Snap channel, e.g. latest/edge (empty = no publish)"
+        required: false
+        default: ""
+
+concurrency:
+  group: main-snap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build core20 snaps (multi-arch)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Remote build snaps on Launchpad
+        uses: snapcore/action-build@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snapcraft-channel: stable
+          snapcraft-args: >-
+            remote-build
+            --launchpad-accept-public-upload
+
+      - name: Upload snap artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-snaps-${{ github.sha }}
+          path: "*.snap"
+          if-no-files-found: error
+
+  publish:
+    name: Publish to Snap Store
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_channel != ''
+    runs-on: ubuntu-22.04
+    needs: build
+    environment: main-release
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: main-snaps-${{ github.sha }}
+          path: dist
+
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic --channel=stable
+
+      - name: Login to Snap Store
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        run: |
+          login_file="$RUNNER_TEMP/store-login.txt"
+          printf '%s' "$SNAPCRAFT_STORE_CREDENTIALS" > "$login_file"
+          snapcraft login --with "$login_file"
+
+      - name: Publish all built snaps
+        run: |
+          set -eu
+          channel='${{ github.event.inputs.release_channel }}'
+          shopt -s nullglob
+          snaps=(dist/*.snap)
+          if [ "${#snaps[@]}" -eq 0 ]; then
+            echo "No snap files found in dist/"
+            exit 1
+          fi
+          for snap in "${snaps[@]}"; do
+            echo "Publishing $snap to $channel"
+            snapcraft upload --release "$channel" "$snap"
+          done
+
+      - name: Logout from Snap Store
+        if: always()
+        run: snapcraft logout || true
