@@ -1,0 +1,32 @@
+[build-system]
+requires = [
+  "setuptools==75.3.4",
+  "wheel==0.45.1",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rundfunk"
+dynamic = ["version"]
+description = "Unofficial Deutschlandradio GNU/Linux client"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8,<3.13"
+dependencies = [
+  "pydbus==0.6.0",
+]
+
+[project.scripts]
+rundfunk = "rundfunk.__main__:cli"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "rundfunk.__version__" }
+
+[tool.setuptools.package-data]
+"rundfunk.gui" = ["assets/*.svg"]

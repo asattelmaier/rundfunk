@@ -9,29 +9,40 @@ Deutschlandfunk Nova and Dokumente und Debatten.
   <img src="https://drive.google.com/uc?export=view&id=15w5cfdpoHcn0kl6izspzTgR-6ywPxkbO" alt="Rundfunk App">
 </p>
 
-## Prerequirement
+## Prerequisites
 
-* python >= 3.6
+* Python `3.12.3` for local development via [uv](https://docs.astral.sh/uv/)
 * [snapcraft](https://snapcraft.io/snapcraft)
-* [gir1.2-appindicator3-0.1](https://packages.ubuntu.com/impish/gir1.2-appindicator3-0.1)
-* [python3-gst-1.0](https://packages.ubuntu.com/bionic/python3-gst-1.0)
+* system packages:
+  * `python3-gi`
+  * [gir1.2-appindicator3-0.1](https://packages.ubuntu.com/impish/gir1.2-appindicator3-0.1)
+  * [python3-gst-1.0](https://packages.ubuntu.com/bionic/python3-gst-1.0)
 
-## Build
+`uv` manages the Python package dependency (`pydbus`); the GTK/GStreamer bindings stay system-managed.
+The packaged app remains compatible with Python `3.8+`, because the current Snap targets `core20`.
+
+## Setup
 
 ```bash
-snapcraft
-```
-
-## Install
-
-```bash
-snap install --devmode *.snap
+uv sync
 ```
 
 ## Run
 
 ```bash
-rundfunk
+uv run rundfunk
+```
+
+## Build Snap
+
+```bash
+snapcraft pack
+```
+
+## Install Snap
+
+```bash
+snap install --dangerous --devmode ./rundfunk_*.snap
 ```
 
 ## Publish
@@ -39,6 +50,6 @@ rundfunk
 ```bash
 # Login
 snapcraft login
-# push
-snapcraft push rundfunk_<version>_<arch>.snap
+# upload
+snapcraft upload --release <channel> rundfunk_<version>_<arch>.snap
 ```

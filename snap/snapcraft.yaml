@@ -1,6 +1,6 @@
 name: rundfunk
 base: core20
-version: '2.1.2'
+adopt-info: rundfunk
 summary: Unofficial Deutschlandradio GNU/Linux client
 description: |
   Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio channels, Deutschlandfunk, Deutschlandfunk
@@ -24,7 +24,7 @@ apps:
         $SNAP/gnome-platform/usr/lib/girepository-1.0:$SNAP/gnome-platform/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/girepository-1.0:$SNAP/usr/lib/girepository-1.0:$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET/girepository-1.0
       LD_LIBRARY_PATH: >-
         $SNAP/gnome-platform/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/gnome-platform/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/gnome-platform/usr/lib:$SNAP/gnome-platform/lib:$SNAP/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/usr/lib/$SNAP_LAUNCHER_ARCH_TRIPLET:$SNAP/lib:$SNAP/usr/lib
-    command: src/main.py
+    command: bin/run-rundfunk
     extensions: [gnome-3-38]
     plugs:
       - audio-playback
@@ -33,14 +33,18 @@ apps:
       - mpris
 
 parts:
-  copy-src:
+  launcher:
     plugin: dump
-    source: ./src
+    source: ./snap/local
     organize:
-      "*": src/
+      run-rundfunk: bin/run-rundfunk
 
   rundfunk:
     plugin: nil
+    build-packages:
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
     stage-packages:
       - python3-pydbus
       - python3-gst-1.0
@@ -52,10 +56,46 @@ parts:
       - freeglut3
       - libgpm2
       - libslang2
+    override-pull: |
+      project_dir="${SNAPCRAFT_PROJECT_DIR:-$CRAFT_PROJECT_DIR}"
+      version="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' "$project_dir/src/rundfunk/__init__.py")"
+      snapcraftctl set-version "$version"
+    override-build: |
+      set -eu
+      snapcraftctl build
+      project_dir="${SNAPCRAFT_PROJECT_DIR:-$CRAFT_PROJECT_DIR}"
+      target_dir="${CRAFT_PART_INSTALL:-$SNAPCRAFT_PART_INSTALL}"
+      build_source="$(mktemp -d)"
+      wheel_dir="$(mktemp -d)"
+      trap 'rm -rf "$build_source" "$wheel_dir"' EXIT
+      tar \
+        --exclude='./.git' \
+        --exclude='./.github' \
+        --exclude='./.idea' \
+        --exclude='./.venv' \
+        --exclude='./__pycache__' \
+        --exclude='./build' \
+        --exclude='./dist' \
+        --exclude='./*.pyc' \
+        --exclude='./*.snap' \
+        --exclude='./*.egg-info' \
+        -C "$project_dir" \
+        -cf - \
+        . | tar -C "$build_source" -xf -
+      python3 -m pip wheel \
+        --disable-pip-version-check \
+        --no-deps \
+        --wheel-dir "$wheel_dir" \
+        "$build_source"
+      python3 -m pip install \
+        --disable-pip-version-check \
+        --no-deps \
+        --target "$target_dir" \
+        "$wheel_dir"/rundfunk-*.whl
 
   cleanup:
     after:
-      - copy-src
+      - launcher
       - rundfunk
       - gnome-3-38-extension
     plugin: nil
@@ -65,13 +105,16 @@ parts:
       - gnome-3-38-2004
     override-prime: |
       set -eu
+      prime_dir="${CRAFT_PRIME:-$SNAPCRAFT_PRIME}"
       for snap in "core20" "gtk-common-themes" "gnome-3-38-2004"; do
         cd "/snap/$snap/current"
-        find . \( -type f -o -type l \) | while read -r path; do
-          target="$SNAPCRAFT_PRIME/$path"
-          if [ -d "$target" ]; then
-            continue
-          fi
-          rm -f "$target"
-        done
+        find . \( -type f -o -type l \) -exec sh -c '
+          for path do
+            target="$0/$path"
+            if [ -d "$target" ]; then
+              continue
+            fi
+            rm -f "$target"
+          done
+        ' "$prime_dir" {} +
       done
