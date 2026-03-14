@@ -14,7 +14,6 @@ class AppMenuFactory:
             .add_item(MenuItemLabel.DEUTSCHLANDFUNK.value) \
             .add_item(MenuItemLabel.DEUTSCHLANDFUNK_KULTUR.value) \
             .add_item(MenuItemLabel.DEUTSCHLANDFUNK_NOVA.value) \
-            .add_item(MenuItemLabel.DOKUMENTE_UND_DEBATTEN.value) \
             .add_separator() \
             .add_item(MenuItemLabel.QUIT.value) \
             .build()

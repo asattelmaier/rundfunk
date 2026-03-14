@@ -2,8 +2,8 @@
 
 [![rundfunk](https://snapcraft.io/rundfunk/badge.svg)](https://snapcraft.io/rundfunk)
 
-Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio channels, Deutschlandfunk, Deutschlandfunk Kultur,
-Deutschlandfunk Nova and Dokumente und Debatten.
+Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio channels Deutschlandfunk, Deutschlandfunk Kultur,
+and Deutschlandfunk Nova.
 
 <p align="center">
   <img src="https://drive.google.com/uc?export=view&id=15w5cfdpoHcn0kl6izspzTgR-6ywPxkbO" alt="Rundfunk App">
@@ -36,13 +36,15 @@ uv run rundfunk
 ## Build Snap
 
 ```bash
+rm -f rundfunk_*.snap
+snapcraft clean rundfunk cleanup
 snapcraft pack
 ```
 
-## Install Snap
+## Install / Update Snap
 
 ```bash
-snap install --dangerous --devmode ./rundfunk_*.snap
+sudo snap install --devmode ./rundfunk_*.snap
 ```
 
 ## Publish

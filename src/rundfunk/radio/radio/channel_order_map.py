@@ -4,7 +4,7 @@ from .channel import Channel
 class ChannelOrderMap:
     _map = {
         Channel.DEUTSCHLANDFUNK.value: {
-            'previous': Channel.DOKUMENTE_UND_DEBATTEN,
+            'previous': Channel.DEUTSCHLANDFUNK_NOVA,
             'next': Channel.DEUTSCHLANDFUNK_KULTUR,
         },
         Channel.DEUTSCHLANDFUNK_KULTUR.value: {
@@ -13,10 +13,6 @@ class ChannelOrderMap:
         },
         Channel.DEUTSCHLANDFUNK_NOVA.value: {
             'previous': Channel.DEUTSCHLANDFUNK_KULTUR,
-            'next': Channel.DOKUMENTE_UND_DEBATTEN,
-        },
-        Channel.DOKUMENTE_UND_DEBATTEN.value: {
-            'previous': Channel.DEUTSCHLANDFUNK_NOVA,
             'next': Channel.DEUTSCHLANDFUNK,
         },
     }

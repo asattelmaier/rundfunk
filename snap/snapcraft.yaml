@@ -3,8 +3,9 @@ base: core20
 adopt-info: rundfunk
 summary: Unofficial Deutschlandradio GNU/Linux client
 description: |
-  Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio channels, Deutschlandfunk, Deutschlandfunk
-  Kultur, Deutschlandfunk Nova and Dokumente und Debatten.
+  Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio
+  channels Deutschlandfunk, Deutschlandfunk Kultur, and
+  Deutschlandfunk Nova.
 
 grade: stable
 confinement: strict

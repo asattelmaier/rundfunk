@@ -7,7 +7,6 @@ class TitleMap:
         Title.DEUTSCHLANDFUNK.value: Channel.DEUTSCHLANDFUNK,
         Title.DEUTSCHLANDFUNK_KULTUR.value: Channel.DEUTSCHLANDFUNK_KULTUR,
         Title.DEUTSCHLANDFUNK_NOVA.value: Channel.DEUTSCHLANDFUNK_NOVA,
-        Title.DOKUMENTE_UND_DEBATTEN.value: Channel.DOKUMENTE_UND_DEBATTEN,
     }
 
     @staticmethod
