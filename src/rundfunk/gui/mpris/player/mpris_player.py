@@ -47,7 +47,6 @@ class MprisPlayer:
     CanPause = True
     CanGoNext = True
     CanGoPrevious = True
-    PlaybackStatus = PlaybackStatus.STOPPED.value
     Identity = 'Rundfunk'
     DesktopEntry = 'rundfunk'
     SupportedMimeTypes = []
@@ -60,10 +59,15 @@ class MprisPlayer:
         self._interface: str = f'{main_interface}.Player'
         self.DesktopEntry = desktop_entry_name
         self._event_bus = event_bus
+        self._playback_status = PlaybackStatus.STOPPED.value
 
         event_bus.subscribe(OnPlay(self._on_play))
         event_bus.subscribe(OnPause(self._on_pause))
         event_bus.subscribe(OnMetaDataUpdate(self._on_meta_data_update))
+
+    @property
+    def PlaybackStatus(self) -> str:
+        return self._playback_status
 
     @property
     def Metadata(self) -> dict:
@@ -114,6 +118,7 @@ class MprisPlayer:
         self._update_title(event.title)
 
     def _update_playback_status(self, playback_status: PlaybackStatus) -> None:
+        self._playback_status = playback_status.value
         self._update({'PlaybackStatus': playback_status.value})
 
     def _update_channel(self, channel: Channel) -> None:

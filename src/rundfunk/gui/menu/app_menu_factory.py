@@ -1,19 +1,19 @@
 from rundfunk.gui.menu.menu_item import MenuItemLabel
+from rundfunk.radio import Channel
 
 
 class AppMenuFactory:
-    def __init__(self, menu_builder, channel):
+    def __init__(self, menu_builder):
         self._menu_builder = menu_builder
-        self._channel = channel
 
     def create(self) -> None:
         return self._build_menu()
 
     def _build_menu(self) -> None:
         return self._menu_builder \
-            .add_item(MenuItemLabel.DEUTSCHLANDFUNK.value) \
-            .add_item(MenuItemLabel.DEUTSCHLANDFUNK_KULTUR.value) \
-            .add_item(MenuItemLabel.DEUTSCHLANDFUNK_NOVA.value) \
+            .add_channel(Channel.DEUTSCHLANDFUNK) \
+            .add_channel(Channel.DEUTSCHLANDFUNK_KULTUR) \
+            .add_channel(Channel.DEUTSCHLANDFUNK_NOVA) \
             .add_separator() \
-            .add_item(MenuItemLabel.QUIT.value) \
+            .add_quit_item(MenuItemLabel.QUIT.value) \
             .build()

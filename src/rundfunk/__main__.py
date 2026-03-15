@@ -1,6 +1,8 @@
 import argparse
+import sys
 from rundfunk import __version__
 from rundfunk.logger import Logger
+from rundfunk.runtime import MissingSystemDependencyError, ensure_host_runtime_environment
 
 
 def main() -> None:
@@ -21,7 +23,12 @@ def cli() -> None:
     parser.add_argument("--version", action="version", version=f"rundfunk version {__version__}")
     args = parser.parse_args()
     Logger.setup(args.log_level)
-    main()
+    ensure_host_runtime_environment()
+    try:
+        main()
+    except MissingSystemDependencyError as exc:
+        print(exc, file=sys.stderr)
+        raise SystemExit(1) from exc
 
 
 if __name__ == "__main__":

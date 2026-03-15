@@ -24,6 +24,7 @@ The packaged app remains compatible with Python `3.8+`, because the current Snap
 ## Setup
 
 ```bash
+sudo apt install python3-gi gir1.2-appindicator3-0.1 python3-gst-1.0
 uv sync
 ```
 
