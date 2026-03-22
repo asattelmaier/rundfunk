@@ -6,3 +6,5 @@ __pycache__/
 *.snap
 build/
 dist/
+.pytest_cache/
+NOTES.md

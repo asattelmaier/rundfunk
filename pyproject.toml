@@ -16,8 +16,16 @@ dependencies = [
   "pydbus==0.6.0",
 ]
 
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0",
+]
+
 [project.scripts]
 rundfunk = "rundfunk.__main__:cli"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.setuptools]
 package-dir = { "" = "src" }
