@@ -1,14 +1,27 @@
+import time
 from typing import Callable, Optional
 
 from rundfunk.event_bus import EventBus
 from rundfunk.gui.menu.menu_item import MenuItem
 from rundfunk.logger import Logger
 from rundfunk.radio import Channel, OnMetaDataUpdate, OnPause, OnPlay, Pause, Play, UpdateMetaData
-from .shell_menu_state import ShellMenuState
+from rundfunk.runtime import MissingSystemDependencyError, require_namespace
 from ..g_object import CheckMenuItem, GLib, GtkLabel, GtkMenuItem, Menu
+
+try:
+    gi = require_namespace('Gio', '2.0', 'python3-gi')
+    from gi.repository import Gio
+except MissingSystemDependencyError:
+    Gio = None
 
 
 class MenuHandler:
+    _DBUS_MENU_INTERFACE = 'com.canonical.dbusmenu'
+    _DBUS_MENU_EVENT = 'Event'
+    _DBUS_MENU_ROOT_ID = 0
+    _DBUS_MENU_OPENED = 'opened'
+    _DBUS_MENU_CLOSED = 'closed'
+    _ROOT_CLOSE_WINDOW_SECONDS = 0.5
     _logger: Logger = Logger('MenuHandler')
 
     def __init__(self, event_bus: EventBus, quit_handler: Callable):
@@ -19,6 +32,9 @@ class MenuHandler:
         self._is_ready: bool = False
         self._active_channel: Optional[Channel] = None
         self._session_channel: Optional[Channel] = None
+        self._root_menu_closed_at: Optional[float] = None
+        self._dbus_connection = None
+        self._dbus_filter_id: Optional[int] = None
 
     @staticmethod
     def create(event_bus: EventBus, quit_handler: Callable) -> 'MenuHandler':
@@ -37,6 +53,7 @@ class MenuHandler:
         menu.connect('deactivate', self._schedule_menu_session_reset)
         menu.connect('selection-done', self._schedule_menu_session_reset)
         menu.connect('cancel', self._schedule_menu_session_reset)
+        self._attach_dbus_menu_filter()
         self._is_ready = True
 
     def add_channel_item(
@@ -83,6 +100,10 @@ class MenuHandler:
 
         self._logger.debug("ToggleChannel - " + item.channel.name)
         item.show_title()
+        was_submenu_open = item.submenu.get_mapped()
+        was_channel_opened_in_current_session = (
+            self._session_channel is not None and self._session_channel.value == item.channel.value
+        )
 
         is_active_channel = self._active_channel and self._active_channel.value == item.channel.value
         self._session_channel = item.channel
@@ -93,6 +114,12 @@ class MenuHandler:
             return
 
         if not is_active_channel:
+            return
+
+        if was_submenu_open or was_channel_opened_in_current_session:
+            self._logger.debug("ClosePreviewByToggle - " + item.channel.name)
+            self._session_channel = None
+            self._event_bus.publish(Pause(item.channel))
             return
 
         item.activate()
@@ -107,13 +134,13 @@ class MenuHandler:
         if item.submenu.get_mapped():
             return False
 
-        if not ShellMenuState.is_channel_menu_open():
-            return False
-
         if not self._active_channel or self._active_channel.value != item.channel.value:
             return False
 
         if not self._session_channel or self._session_channel.value != item.channel.value:
+            return False
+
+        if self._was_root_menu_closed_recently():
             return False
 
         self._logger.debug("ClosePreview - " + item.channel.name)
@@ -163,3 +190,50 @@ class MenuHandler:
 
         if self._active_channel and self._active_channel.value == item.channel.value:
             self._active_channel = None
+
+    def _attach_dbus_menu_filter(self) -> None:
+        if Gio is None or self._dbus_filter_id is not None:
+            return
+
+        self._dbus_connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        self._dbus_filter_id = self._dbus_connection.add_filter(self._on_dbus_menu_message)
+
+    def _on_dbus_menu_message(self, _connection, message, incoming: bool):
+        if Gio is None or not incoming:
+            return message
+
+        if message.get_message_type() != Gio.DBusMessageType.METHOD_CALL:
+            return message
+
+        if message.get_interface() != self._DBUS_MENU_INTERFACE:
+            return message
+
+        if message.get_member() != self._DBUS_MENU_EVENT:
+            return message
+
+        body = message.get_body()
+
+        if body is None:
+            return message
+
+        item_id, event_name, *_ = body.unpack()
+
+        if item_id != self._DBUS_MENU_ROOT_ID:
+            return message
+
+        if event_name == self._DBUS_MENU_OPENED:
+            self._root_menu_closed_at = None
+            self._session_channel = None
+            return message
+
+        if event_name == self._DBUS_MENU_CLOSED:
+            self._root_menu_closed_at = time.monotonic()
+            self._session_channel = None
+
+        return message
+
+    def _was_root_menu_closed_recently(self) -> bool:
+        return bool(
+            self._root_menu_closed_at is not None
+            and (time.monotonic() - self._root_menu_closed_at) <= self._ROOT_CLOSE_WINDOW_SECONDS
+        )
