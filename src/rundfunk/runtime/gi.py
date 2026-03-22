@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 
-
 _SYSTEM_DIST_PACKAGES = (
     Path("/usr/lib/python3/dist-packages"),
     Path("/usr/local/lib/python3/dist-packages"),
@@ -37,8 +36,7 @@ def require_namespace(namespace: str, version: str, package_name: str):
         gi.require_version(namespace, version)
     except ValueError as exc:
         raise MissingSystemDependencyError(
-            f"Namespace {namespace} not available. "
-            f"Install the system package `{package_name}`."
+            f"Namespace {namespace} not available. Install the system package `{package_name}`."
         ) from exc
 
     return gi

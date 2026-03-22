@@ -1,1 +1,1 @@
-from .mpris_player import MprisPlayer
+from .mpris_player import MprisPlayer as MprisPlayer

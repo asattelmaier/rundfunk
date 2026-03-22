@@ -1,14 +1,17 @@
+from typing import Optional
+
 from rundfunk.event_bus import EventBus
 from rundfunk.logger import Logger
 from rundfunk.radio.audio_player import AudioPlayer, OnTags, Tags
-from rundfunk.radio.radio.subscriptions import OnPlay, OnPause, OnToggle, OnNext, OnPrevious
+from rundfunk.radio.radio.subscriptions import OnNext, OnPause, OnPlay, OnPrevious, OnToggle
+
 from .channel import Channel
 from .channel_order_map import ChannelOrderMap
-from .events import Pause, Play, Toggle, Next, Previous, UpdateMetaData
+from .events import Next, Pause, Play, Previous, Toggle, UpdateMetaData
 
 
 class Radio:
-    _logger: Logger = Logger('Radio')
+    _logger: Logger = Logger("Radio")
     _current_channel: Channel
 
     def __init__(self, audio_player: AudioPlayer, event_bus: EventBus):
@@ -16,7 +19,7 @@ class Radio:
         self._event_bus = event_bus
 
     @staticmethod
-    def create(audio_player: AudioPlayer, event_bus: EventBus, current_channel: Channel) -> 'Radio':
+    def create(audio_player: AudioPlayer, event_bus: EventBus, current_channel: Channel) -> "Radio":
         radio = Radio(audio_player, event_bus)
 
         radio._set_channel(current_channel)
@@ -69,7 +72,7 @@ class Radio:
                 title = event.tagList.get_string(tag)[1]
                 self._publish_meta_data_update(title)
 
-    def _publish_meta_data_update(self, title: str = None) -> None:
+    def _publish_meta_data_update(self, title: Optional[str] = None) -> None:
         if not isinstance(title, str):
             return
 

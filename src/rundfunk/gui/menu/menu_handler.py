@@ -6,23 +6,24 @@ from rundfunk.gui.menu.menu_item import MenuItem
 from rundfunk.logger import Logger
 from rundfunk.radio import Channel, OnMetaDataUpdate, OnPause, OnPlay, Pause, Play, UpdateMetaData
 from rundfunk.runtime import MissingSystemDependencyError, require_namespace
+
 from ..g_object import CheckMenuItem, GLib, GtkLabel, GtkMenuItem, Menu
 
 try:
-    gi = require_namespace('Gio', '2.0', 'python3-gi')
+    gi = require_namespace("Gio", "2.0", "python3-gi")
     from gi.repository import Gio
 except MissingSystemDependencyError:
     Gio = None
 
 
 class MenuHandler:
-    _DBUS_MENU_INTERFACE = 'com.canonical.dbusmenu'
-    _DBUS_MENU_EVENT = 'Event'
+    _DBUS_MENU_INTERFACE = "com.canonical.dbusmenu"
+    _DBUS_MENU_EVENT = "Event"
     _DBUS_MENU_ROOT_ID = 0
-    _DBUS_MENU_OPENED = 'opened'
-    _DBUS_MENU_CLOSED = 'closed'
+    _DBUS_MENU_OPENED = "opened"
+    _DBUS_MENU_CLOSED = "closed"
     _ROOT_CLOSE_WINDOW_SECONDS = 0.5
-    _logger: Logger = Logger('MenuHandler')
+    _logger: Logger = Logger("MenuHandler")
 
     def __init__(self, event_bus: EventBus, quit_handler: Callable):
         self._items: [MenuItem] = []
@@ -37,7 +38,7 @@ class MenuHandler:
         self._dbus_filter_id: Optional[int] = None
 
     @staticmethod
-    def create(event_bus: EventBus, quit_handler: Callable) -> 'MenuHandler':
+    def create(event_bus: EventBus, quit_handler: Callable) -> "MenuHandler":
         menu_handler = MenuHandler(event_bus, quit_handler)
 
         event_bus.subscribe(OnPlay(menu_handler._activate_item))
@@ -48,11 +49,11 @@ class MenuHandler:
 
     def ready(self, menu: Menu) -> None:
         self._menu = menu
-        menu.connect('hide', self._schedule_menu_session_reset)
-        menu.connect('unmap', self._schedule_menu_session_reset)
-        menu.connect('deactivate', self._schedule_menu_session_reset)
-        menu.connect('selection-done', self._schedule_menu_session_reset)
-        menu.connect('cancel', self._schedule_menu_session_reset)
+        menu.connect("hide", self._schedule_menu_session_reset)
+        menu.connect("unmap", self._schedule_menu_session_reset)
+        menu.connect("deactivate", self._schedule_menu_session_reset)
+        menu.connect("selection-done", self._schedule_menu_session_reset)
+        menu.connect("cancel", self._schedule_menu_session_reset)
         self._attach_dbus_menu_filter()
         self._is_ready = True
 
@@ -65,11 +66,11 @@ class MenuHandler:
     ) -> None:
         menu_item = MenuItem(item, title_label, submenu, channel)
 
-        item.connect('toggled', self._toggle_channel, menu_item)
-        submenu.connect('hide', self._close_preview, menu_item)
-        submenu.connect('unmap', self._close_preview, menu_item)
-        submenu.connect('deactivate', self._close_preview, menu_item)
-        submenu.connect('selection-done', self._close_preview, menu_item)
+        item.connect("toggled", self._toggle_channel, menu_item)
+        submenu.connect("hide", self._close_preview, menu_item)
+        submenu.connect("unmap", self._close_preview, menu_item)
+        submenu.connect("deactivate", self._close_preview, menu_item)
+        submenu.connect("selection-done", self._close_preview, menu_item)
         self._items.append(menu_item)
 
     def _get_item_by_channel(self, channel: Channel) -> Optional[MenuItem]:

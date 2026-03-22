@@ -17,8 +17,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = [
+dev = [
   "pytest>=7.0",
+  "ruff>=0.11",
 ]
 
 [project.scripts]
@@ -26,6 +27,31 @@ rundfunk = "rundfunk.__main__:cli"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "F",     # pyflakes
+  "E",     # pycodestyle errors
+  "W",     # pycodestyle warnings
+  "I",     # isort
+  "UP",    # pyupgrade
+  "B",     # flake8-bugbear
+  "SIM",   # flake8-simplify
+  "RUF",   # ruff-specific rules
+]
+ignore = [
+  "RUF012", # mutable class attrs — static lookup dicts, never mutated
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/rundfunk/gui/g_object/__init__.py" = ["E402", "F401"]
+"src/rundfunk/radio/g_object/__init__.py" = ["E402"]
+"src/rundfunk/gui/menu/menu_handler.py" = ["E402"]
+"tests/*" = ["E402"]
 
 [tool.setuptools]
 package-dir = { "" = "src" }

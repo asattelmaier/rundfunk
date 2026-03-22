@@ -1,1 +1,1 @@
-from .mpris_server import MprisMediaPlayer
+from .mpris_server import MprisMediaPlayer as MprisMediaPlayer

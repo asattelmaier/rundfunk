@@ -1,1 +1,1 @@
-from .on_tags import OnTags
+from .on_tags import OnTags as OnTags

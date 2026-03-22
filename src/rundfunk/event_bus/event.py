@@ -1,2 +1,2 @@
 class Event:
-    name: str = ''
+    name: str = ""

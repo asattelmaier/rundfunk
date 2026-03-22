@@ -1,7 +1,8 @@
+from rundfunk.radio import Channel
+
+from ..g_object import CheckMenuItem, GimpToolkit, GtkLabel, GtkMenuItem, Menu, Pango
 from .menu_handler import MenuHandler
 from .menu_item import MenuItemLabelChannelMap
-from rundfunk.radio import Channel
-from ..g_object import CheckMenuItem, GimpToolkit, GtkLabel, GtkMenuItem, Menu, Pango
 
 
 class MenuBuilder:
@@ -13,7 +14,7 @@ class MenuBuilder:
         self._menu_handler = menu_handler
 
     @staticmethod
-    def create(gimp_toolkit: GimpToolkit, menu_handler: MenuHandler) -> 'MenuBuilder':
+    def create(gimp_toolkit: GimpToolkit, menu_handler: MenuHandler) -> "MenuBuilder":
         menu = gimp_toolkit.Menu()
 
         return MenuBuilder(gimp_toolkit, menu, menu_handler)
@@ -37,7 +38,7 @@ class MenuBuilder:
     def add_quit_item(self, label: str):
         item: GtkMenuItem = self._gimp_toolkit.MenuItem(label=label)
 
-        item.connect('activate', self._menu_handler.quit_item_handler)
+        item.connect("activate", self._menu_handler.quit_item_handler)
         self._add_to_menu(item)
 
         return self
@@ -55,7 +56,7 @@ class MenuBuilder:
         return self._menu
 
     def _create_title_label(self) -> GtkLabel:
-        label = self._gimp_toolkit.Label(label='...')
+        label = self._gimp_toolkit.Label(label="...")
 
         label.set_xalign(0.0)
         label.set_line_wrap(True)

@@ -1,8 +1,7 @@
 import pytest
 
-from rundfunk.event_bus import EventBus, Event, Subscription
+from rundfunk.event_bus import EventBus, Subscription
 from rundfunk.radio.radio.channel import Channel
-from rundfunk.radio.radio.events import Play, Pause, UpdateMetaData
 
 
 class FakeAudioPlayer:
@@ -78,4 +77,5 @@ def audio_player():
 @pytest.fixture
 def radio(audio_player, event_bus):
     from rundfunk.radio.radio.radio import Radio
+
     return Radio.create(audio_player, event_bus, Channel.DEUTSCHLANDFUNK)

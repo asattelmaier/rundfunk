@@ -1,1 +1,1 @@
-from .tags import Tags
+from .tags import Tags as Tags

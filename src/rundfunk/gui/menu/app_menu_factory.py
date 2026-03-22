@@ -10,10 +10,11 @@ class AppMenuFactory:
         return self._build_menu()
 
     def _build_menu(self) -> None:
-        return self._menu_builder \
-            .add_channel(Channel.DEUTSCHLANDFUNK) \
-            .add_channel(Channel.DEUTSCHLANDFUNK_KULTUR) \
-            .add_channel(Channel.DEUTSCHLANDFUNK_NOVA) \
-            .add_separator() \
-            .add_quit_item(MenuItemLabel.QUIT.value) \
+        return (
+            self._menu_builder.add_channel(Channel.DEUTSCHLANDFUNK)
+            .add_channel(Channel.DEUTSCHLANDFUNK_KULTUR)
+            .add_channel(Channel.DEUTSCHLANDFUNK_NOVA)
+            .add_separator()
+            .add_quit_item(MenuItemLabel.QUIT.value)
             .build()
+        )

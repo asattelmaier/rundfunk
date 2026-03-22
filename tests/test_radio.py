@@ -4,16 +4,16 @@ Uses a FakeAudioPlayer (no GStreamer) with the real EventBus
 to verify actual application behavior.
 """
 
-from rundfunk.radio.radio.channel import Channel
-from rundfunk.radio.radio.events import Play, Pause, Toggle, Next, Previous, UpdateMetaData
-from rundfunk.radio.audio_player.events import Tags
-
 from conftest import EventCollector, FakeTagList
 
+from rundfunk.radio.audio_player.events import Tags
+from rundfunk.radio.radio.channel import Channel
+from rundfunk.radio.radio.events import Next, Pause, Play, Previous, Toggle, UpdateMetaData
 
 # ---------------------------------------------------------------------------
 # Toggle behaviour
 # ---------------------------------------------------------------------------
+
 
 class TestToggle:
     def test_toggle_when_stopped_starts_playback(self, event_bus, audio_player, radio):
@@ -46,6 +46,7 @@ class TestToggle:
 # ---------------------------------------------------------------------------
 # Channel navigation
 # ---------------------------------------------------------------------------
+
 
 class TestChannelNavigation:
     def test_next_from_dlf_plays_kultur(self, event_bus, audio_player, radio):
@@ -97,6 +98,7 @@ class TestChannelNavigation:
 # Play / Pause with explicit channel
 # ---------------------------------------------------------------------------
 
+
 class TestPlayPause:
     def test_play_same_channel_does_not_change_uri(self, event_bus, audio_player, radio):
         original_uri = audio_player.uri
@@ -129,6 +131,7 @@ class TestPlayPause:
 # Metadata / Tag handling
 # ---------------------------------------------------------------------------
 
+
 class TestMetadata:
     def test_title_tag_publishes_update(self, event_bus, audio_player, radio):
         meta_events = EventCollector(event_bus, UpdateMetaData)
@@ -157,9 +160,14 @@ class TestMetadata:
         meta_events = EventCollector(event_bus, UpdateMetaData)
 
         class BrokenTagList:
-            def n_tags(self): return 1
-            def nth_tag_name(self, i): return "title"
-            def get_string(self, tag): return (False, None)
+            def n_tags(self):
+                return 1
+
+            def nth_tag_name(self, i):
+                return "title"
+
+            def get_string(self, tag):
+                return (False, None)
 
         event_bus.publish(Tags(BrokenTagList()))
 

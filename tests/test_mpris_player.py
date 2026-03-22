@@ -8,7 +8,6 @@ import pytest
 
 try:
     from rundfunk.gui.mpris.player.mpris_player import MprisPlayer
-    from rundfunk.gui.mpris.player.playback_status import PlaybackStatus
     from rundfunk.gui.mpris.player.title_map import TitleMap
 
     HAS_GTK = True
@@ -17,21 +16,21 @@ except Exception:
 
 pytestmark = pytest.mark.skipif(not HAS_GTK, reason="GTK system packages not available")
 
-from rundfunk.event_bus import EventBus
-from rundfunk.radio.radio.channel import Channel
-from rundfunk.radio.radio.events import Play, Pause, Toggle, Next, Previous, UpdateMetaData
-
 from conftest import EventCollector
+
+from rundfunk.radio.radio.channel import Channel
+from rundfunk.radio.radio.events import Next, Pause, Play, Previous, Toggle, UpdateMetaData
 
 
 @pytest.fixture
 def mpris(event_bus):
-    return MprisPlayer('org.mpris.MediaPlayer2', event_bus, 'rundfunk')
+    return MprisPlayer("org.mpris.MediaPlayer2", event_bus, "rundfunk")
 
 
 # ---------------------------------------------------------------------------
 # Playback status
 # ---------------------------------------------------------------------------
+
 
 class TestPlaybackStatus:
     def test_initial_status_is_stopped(self, event_bus, mpris):
@@ -52,6 +51,7 @@ class TestPlaybackStatus:
 # ---------------------------------------------------------------------------
 # MPRIS commands publish correct events
 # ---------------------------------------------------------------------------
+
 
 class TestMprisCommands:
     def test_play_pause_publishes_toggle(self, event_bus, mpris):
@@ -80,19 +80,20 @@ class TestMprisCommands:
 # Metadata
 # ---------------------------------------------------------------------------
 
+
 class TestMprisMetadata:
     def test_play_updates_artist_to_channel_label(self, event_bus, mpris):
         event_bus.publish(Play(Channel.DEUTSCHLANDFUNK))
 
         metadata = mpris.Metadata
-        artist = metadata['xesam:artist'].unpack()
+        artist = metadata["xesam:artist"].unpack()
         assert artist == [TitleMap.get_label(Channel.DEUTSCHLANDFUNK)]
 
     def test_metadata_update_sets_title(self, event_bus, mpris):
         event_bus.publish(UpdateMetaData(Channel.DEUTSCHLANDFUNK, "Nachrichten"))
 
         metadata = mpris.Metadata
-        title = metadata['xesam:title'].unpack()
+        title = metadata["xesam:title"].unpack()
         assert title == "Nachrichten"
 
     def test_next_clears_title(self, event_bus, mpris):
@@ -101,5 +102,5 @@ class TestMprisMetadata:
         mpris.Next()
 
         metadata = mpris.Metadata
-        title = metadata['xesam:title'].unpack()
+        title = metadata["xesam:title"].unpack()
         assert title == ""

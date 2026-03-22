@@ -1,6 +1,7 @@
 from typing import Callable
 
 from rundfunk.event_bus import Subscription
+
 from ..events import Next
 
 

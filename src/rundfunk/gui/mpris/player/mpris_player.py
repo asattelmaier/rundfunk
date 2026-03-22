@@ -2,14 +2,26 @@ from pydbus.generic import signal
 
 from rundfunk.event_bus import EventBus
 from rundfunk.logger import Logger
-from rundfunk.radio import OnPlay, OnPause, Play, Pause, Toggle, Next, Previous, OnMetaDataUpdate, UpdateMetaData, Channel
+from rundfunk.radio import (
+    Channel,
+    Next,
+    OnMetaDataUpdate,
+    OnPause,
+    OnPlay,
+    Pause,
+    Play,
+    Previous,
+    Toggle,
+    UpdateMetaData,
+)
+
+from ...g_object import Variant
 from .playback_status import PlaybackStatus
 from .title_map import TitleMap
-from ...g_object import Variant
 
 
 class MprisPlayer:
-    _logger: Logger = Logger('MprisPlayer')
+    _logger: Logger = Logger("MprisPlayer")
 
     """
     API Documentation:
@@ -47,16 +59,16 @@ class MprisPlayer:
     CanPause = True
     CanGoNext = True
     CanGoPrevious = True
-    Identity = 'Rundfunk'
-    DesktopEntry = 'rundfunk'
+    Identity = "Rundfunk"
+    DesktopEntry = "rundfunk"
     SupportedMimeTypes = []
     SupportedUriSchemes = []
     HasTrackList = False
     PropertiesChanged = signal()
-    _metadata = {'title': '', 'artist': 'Rundfunk'}
+    _metadata = {"title": "", "artist": "Rundfunk"}
 
     def __init__(self, main_interface: str, event_bus: EventBus, desktop_entry_name: str) -> None:
-        self._interface: str = f'{main_interface}.Player'
+        self._interface: str = f"{main_interface}.Player"
         self.DesktopEntry = desktop_entry_name
         self._event_bus = event_bus
         self._playback_status = PlaybackStatus.STOPPED.value
@@ -80,23 +92,23 @@ class MprisPlayer:
 
         # Title Metadata information:
         # https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/#xesam:title
-        title = {'xesam:title': Variant('s', self._metadata['title'])}
+        title = {"xesam:title": Variant("s", self._metadata["title"])}
 
         # Artist Metadata information:
         # https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/#xesam:artist
-        artist = {'xesam:artist': Variant('as', [self._metadata['artist']])}
+        artist = {"xesam:artist": Variant("as", [self._metadata["artist"]])}
 
         return {**title, **artist}
 
     def Next(self) -> None:
         self._logger.debug("Next")
         self._event_bus.publish(Next())
-        self._update_title('')
+        self._update_title("")
 
     def Previous(self) -> None:
         self._logger.debug("Previous")
         self._event_bus.publish(Previous())
-        self._update_title('')
+        self._update_title("")
 
     def PlayPause(self) -> None:
         self._logger.debug("PlayPause")
@@ -113,21 +125,21 @@ class MprisPlayer:
 
     def _on_meta_data_update(self, event: UpdateMetaData) -> None:
         # FIXME: The meta data is not displayed completely, only the last metadata received is displayed
-        self._logger.debug("OnMetaDataUpdate - " + event.channel.name + ' - ' + event.title)
+        self._logger.debug("OnMetaDataUpdate - " + event.channel.name + " - " + event.title)
         self._update_channel(event.channel)
         self._update_title(event.title)
 
     def _update_playback_status(self, playback_status: PlaybackStatus) -> None:
         self._playback_status = playback_status.value
-        self._update({'PlaybackStatus': playback_status.value})
+        self._update({"PlaybackStatus": playback_status.value})
 
     def _update_channel(self, channel: Channel) -> None:
-        self._metadata['artist'] = TitleMap.get_label(channel)
-        self._update({'Metadata': self.Metadata})
+        self._metadata["artist"] = TitleMap.get_label(channel)
+        self._update({"Metadata": self.Metadata})
 
     def _update_title(self, title: str) -> None:
-        self._metadata['title'] = title
-        self._update({'Metadata': self.Metadata})
+        self._metadata["title"] = title
+        self._update({"Metadata": self.Metadata})
 
     def Raise(self) -> None:
         pass

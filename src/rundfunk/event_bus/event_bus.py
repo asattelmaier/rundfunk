@@ -1,10 +1,11 @@
 from rundfunk.logger import Logger
+
 from .event import Event
 from .subscription import Subscription
 
 
 class EventBus:
-    _logger: Logger = Logger('EventBus')
+    _logger: Logger = Logger("EventBus")
 
     def __init__(self) -> None:
         self._subscriptions: [Subscription] = []

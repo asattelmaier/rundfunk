@@ -1,5 +1,6 @@
 import argparse
 import sys
+
 from rundfunk import __version__
 from rundfunk.logger import Logger
 from rundfunk.runtime import MissingSystemDependencyError, ensure_host_runtime_environment

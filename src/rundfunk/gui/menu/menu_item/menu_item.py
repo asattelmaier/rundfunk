@@ -1,11 +1,12 @@
 import textwrap
 
 from rundfunk.radio import Channel
+
 from ...g_object import CheckMenuItem, GtkLabel, Menu
 
 
 class MenuItem:
-    _PLACEHOLDER = '...'
+    _PLACEHOLDER = "..."
     _TITLE_WRAP_WIDTH = 28
 
     def __init__(
@@ -19,7 +20,7 @@ class MenuItem:
         self._title_label = title_label
         self._submenu = submenu
         self._channel = channel
-        self._title = ''
+        self._title = ""
         self._is_updated_by_click = True
 
     @property

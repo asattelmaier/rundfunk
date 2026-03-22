@@ -3,13 +3,14 @@ from __future__ import annotations
 import os
 
 from rundfunk.runtime import MissingSystemDependencyError, require_namespace
+
 from .menu_item import MenuItemLabel
 
 Gio = None
 
 
 def _populate_atspi_bus_address() -> None:
-    if Gio is None or 'AT_SPI_BUS_ADDRESS' in os.environ:
+    if Gio is None or "AT_SPI_BUS_ADDRESS" in os.environ:
         return
 
     proxy = _safe_call(
@@ -17,9 +18,9 @@ def _populate_atspi_bus_address() -> None:
             Gio.BusType.SESSION,
             Gio.DBusProxyFlags.DO_NOT_AUTO_START,
             None,
-            'org.a11y.Bus',
-            '/org/a11y/bus',
-            'org.a11y.Bus',
+            "org.a11y.Bus",
+            "/org/a11y/bus",
+            "org.a11y.Bus",
             None,
         )
     )
@@ -29,7 +30,7 @@ def _populate_atspi_bus_address() -> None:
 
     result = _safe_call(
         lambda: proxy.call_sync(
-            'GetAddress',
+            "GetAddress",
             None,
             Gio.DBusCallFlags.NONE,
             -1,
@@ -43,7 +44,7 @@ def _populate_atspi_bus_address() -> None:
     address = _safe_call(lambda: result.unpack()[0])
 
     if address:
-        os.environ['AT_SPI_BUS_ADDRESS'] = address
+        os.environ["AT_SPI_BUS_ADDRESS"] = address
 
 
 def _safe_call(callback, default=None):
@@ -54,10 +55,11 @@ def _safe_call(callback, default=None):
 
 
 try:
-    gi = require_namespace('Gio', '2.0', 'python3-gi')
+    gi = require_namespace("Gio", "2.0", "python3-gi")
     from gi.repository import Gio
+
     _populate_atspi_bus_address()
-    gi = require_namespace('Atspi', '2.0', 'gir1.2-atspi-2.0')
+    gi = require_namespace("Atspi", "2.0", "gir1.2-atspi-2.0")
     from gi.repository import Atspi
 except MissingSystemDependencyError:
     Atspi = None
@@ -65,7 +67,7 @@ except MissingSystemDependencyError:
 
 
 class ShellMenuState:
-    _GNOME_SHELL = 'gnome-shell'
+    _GNOME_SHELL = "gnome-shell"
     _CHANNEL_LABELS = {
         MenuItemLabel.DEUTSCHLANDFUNK.value,
         MenuItemLabel.DEUTSCHLANDFUNK_KULTUR.value,
@@ -115,24 +117,24 @@ class ShellMenuState:
             accessible = stack.pop()
             yield accessible
 
-            if ShellMenuState._role_name(accessible) == 'label':
+            if ShellMenuState._role_name(accessible) == "label":
                 continue
 
             stack.extend(ShellMenuState._children(accessible))
 
     @staticmethod
     def _visible_label_name(accessible):
-        if ShellMenuState._role_name(accessible) != 'label':
+        if ShellMenuState._role_name(accessible) != "label":
             return None
 
         if not ShellMenuState._is_showing(accessible):
             return None
 
-        return ShellMenuState._safe_call(accessible.get_name, '') or None
+        return ShellMenuState._safe_call(accessible.get_name, "") or None
 
     @staticmethod
     def _role_name(accessible) -> str:
-        return ShellMenuState._safe_call(accessible.get_role_name, '')
+        return ShellMenuState._safe_call(accessible.get_role_name, "")
 
     @staticmethod
     def _get_gnome_shell():
@@ -149,7 +151,7 @@ class ShellMenuState:
             if application is None:
                 continue
 
-            if ShellMenuState._safe_call(application.get_name, '') == ShellMenuState._GNOME_SHELL:
+            if ShellMenuState._safe_call(application.get_name, "") == ShellMenuState._GNOME_SHELL:
                 return application
 
         return None
@@ -160,9 +162,7 @@ class ShellMenuState:
         child_count = ShellMenuState._safe_call(accessible.get_child_count, 0) or 0
 
         for index in range(child_count):
-            child = ShellMenuState._safe_call(
-                lambda current_index=index: accessible.get_child_at_index(current_index)
-            )
+            child = ShellMenuState._safe_call(lambda current_index=index: accessible.get_child_at_index(current_index))
 
             if child is not None:
                 children.append(child)

@@ -1,7 +1,8 @@
 from rundfunk.event_bus import EventBus
+
+from ..g_object import GStreamer, State
 from .events import Tags
 from .playbin import Playbin
-from ..g_object import State, GStreamer, GstBus
 
 
 class AudioPlayer:
@@ -10,7 +11,7 @@ class AudioPlayer:
         self._player_state = player_state
 
     @staticmethod
-    def create(event_bus: EventBus, g_streamer: GStreamer) -> 'AudioPlayer':
+    def create(event_bus: EventBus, g_streamer: GStreamer) -> "AudioPlayer":
         g_streamer.init(None)
         player: Playbin = g_streamer.ElementFactory.make("playbin", "player")
         player_bus = player.get_bus()
@@ -33,7 +34,7 @@ class AudioPlayer:
         return is_playing or is_ready
 
     def set_uri(self, uri) -> None:
-        self._player.set_property('uri', uri)
+        self._player.set_property("uri", uri)
 
     def play(self) -> None:
         self._player.set_state(self._player_state.PLAYING)

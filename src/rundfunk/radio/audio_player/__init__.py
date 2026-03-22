@@ -1,3 +1,3 @@
-from .audio_player import AudioPlayer
-from .events import Tags
-from .subscriptions import OnTags
+from .audio_player import AudioPlayer as AudioPlayer
+from .events import Tags as Tags
+from .subscriptions import OnTags as OnTags

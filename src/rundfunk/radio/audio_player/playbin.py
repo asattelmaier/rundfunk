@@ -1,4 +1,4 @@
-from ..g_object import State, GstBus
+from ..g_object import GstBus, State
 
 
 class Playbin:

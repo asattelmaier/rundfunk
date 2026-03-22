@@ -2,7 +2,6 @@ import os
 import sys
 from typing import Dict
 
-
 _ENV_REEXEC_MARKER = "RUNDFUNK_ENV_SANITIZED"
 _UNSET_IF_SNAP_ENV_VARS = (
     "LD_LIBRARY_PATH",

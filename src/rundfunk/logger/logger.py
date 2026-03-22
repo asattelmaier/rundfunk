@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 
 class Logger:
@@ -6,12 +7,12 @@ class Logger:
         self._context = context
 
     @staticmethod
-    def setup(log_level: str = None) -> None:
+    def setup(log_level: Optional[str] = None) -> None:
         if log_level is None:
             return
 
         if log_level.upper() == logging.getLevelName(logging.DEBUG):
-            logging.basicConfig(format='[%(asctime)s] %(message)s', level=logging.DEBUG)
+            logging.basicConfig(format="[%(asctime)s] %(message)s", level=logging.DEBUG)
 
     def debug(self, message: str) -> None:
-        logging.debug('%s::%s', self._context, message)
+        logging.debug("%s::%s", self._context, message)
