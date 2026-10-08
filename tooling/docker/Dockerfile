@@ -9,6 +9,7 @@ FROM ${CA_BOOTSTRAP_IMAGE} AS ca-bootstrap
 
 FROM ${UBUNTU_IMAGE}
 
+# Fixes every apt package version. Bump it to update them.
 ARG UBUNTU_SNAPSHOT=20261008T000000Z
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -30,19 +31,19 @@ EOF
 RUN --mount=type=bind,from=ca-bootstrap,source=/etc/ssl/certs/ca-certificates.crt,target=/tmp/bootstrap-ca.crt \
     apt-get -o Acquire::https::CAInfo=/tmp/bootstrap-ca.crt update \
  && apt-get -o Acquire::https::CAInfo=/tmp/bootstrap-ca.crt install --yes --no-install-recommends \
-      ca-certificates=20260601~24.04.1 \
-      gir1.2-ayatanaappindicator3-0.1=0.5.93-1build3 \
-      gir1.2-gstreamer-1.0=1.24.2-1ubuntu0.1 \
-      gir1.2-gtk-3.0=3.24.41-4ubuntu1.3 \
-      glib-networking=2.80.0-1build1 \
-      gstreamer1.0-plugins-base=1.24.2-1ubuntu0.5 \
-      gstreamer1.0-plugins-good=1.24.2-1ubuntu1.8 \
-      gstreamer1.0-pulseaudio=1.24.2-1ubuntu1.8 \
-      python3=3.12.3-0ubuntu2.1 \
-      python3-gi=3.48.2-1 \
-      python3-gst-1.0=1.24.1-1 \
-      python3.12=3.12.3-1ubuntu0.17 \
-      shellcheck=0.9.0-1 \
+      ca-certificates \
+      gir1.2-ayatanaappindicator3-0.1 \
+      gir1.2-gstreamer-1.0 \
+      gir1.2-gtk-3.0 \
+      glib-networking \
+      gstreamer1.0-plugins-base \
+      gstreamer1.0-plugins-good \
+      gstreamer1.0-pulseaudio \
+      python3 \
+      python3-gi \
+      python3-gst-1.0 \
+      python3.12 \
+      shellcheck \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=uv /uv /usr/local/bin/uv
