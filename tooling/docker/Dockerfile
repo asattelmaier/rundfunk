@@ -31,7 +31,7 @@ RUN --mount=type=bind,from=ca-bootstrap,source=/etc/ssl/certs/ca-certificates.cr
     apt-get -o Acquire::https::CAInfo=/tmp/bootstrap-ca.crt update \
  && apt-get -o Acquire::https::CAInfo=/tmp/bootstrap-ca.crt install --yes --no-install-recommends \
       ca-certificates=20260601~24.04.1 \
-      gir1.2-appindicator3-0.1=12.10.1+20.10.20200706.1-0ubuntu5 \
+      gir1.2-ayatanaappindicator3-0.1=0.5.93-1build3 \
       gir1.2-gstreamer-1.0=1.24.2-1ubuntu0.1 \
       gir1.2-gtk-3.0=3.24.41-4ubuntu1.3 \
       glib-networking=2.80.0-1build1 \

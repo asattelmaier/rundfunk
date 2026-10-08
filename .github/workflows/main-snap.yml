@@ -80,31 +80,11 @@ jobs:
       - name: Run tests
         run: tooling/scripts/test.sh -v
 
-  package-oldest-supported:
-    name: Build wheel on Python 3.8
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.8"
-
-      - name: Install build frontend
-        run: python -m pip install --upgrade pip build
-
-      - name: Build wheel
-        run: python -m build --wheel
-
   build-amd64:
-    name: Build core20 snap (amd64)
+    name: Build core24 snap (amd64)
     needs:
       - lint-and-test
       - package
-      - package-oldest-supported
     runs-on: ubuntu-24.04
     timeout-minutes: 180
 
@@ -116,7 +96,7 @@ jobs:
         id: snapcraft
         uses: snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79 # v1.3.0
         with:
-          snapcraft-channel: 8.x/stable
+          snapcraft-channel: 9.x/stable
 
       - name: Upload snap artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -126,12 +106,11 @@ jobs:
           if-no-files-found: error
 
   build-arm64:
-    name: Build core20 snap (arm64)
+    name: Build core24 snap (arm64)
     if: github.event_name != 'pull_request'
     needs:
       - lint-and-test
       - package
-      - package-oldest-supported
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 180
 
@@ -143,7 +122,7 @@ jobs:
         id: snapcraft
         uses: snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79 # v1.3.0
         with:
-          snapcraft-channel: 8.x/stable
+          snapcraft-channel: 9.x/stable
 
       - name: Upload snap artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -170,7 +149,7 @@ jobs:
           path: dist
 
       - name: Install Snapcraft
-        run: sudo snap install snapcraft --classic --channel=8.x/stable
+        run: sudo snap install snapcraft --classic --channel=9.x/stable
 
       - name: Publish all built snaps
         env:

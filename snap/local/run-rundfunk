@@ -1,3 +1,5 @@
 #!/bin/sh
 
-exec python3 -m rundfunk "$@"
+# Leave out the platform's stdlib copy that desktop-launch adds; it has no bytecode.
+export PYTHONPATH="$SNAP/usr/lib/python3/dist-packages:$SNAP_DESKTOP_RUNTIME/usr/lib/python3/dist-packages"
+exec /usr/bin/python3 -P -m rundfunk "$@"
