@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rundfunk"
 dynamic = ["version"]
-description = "Unofficial Deutschlandradio GNU/Linux client"
+description = "Unofficial Deutschlandradio player for your Linux system tray"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

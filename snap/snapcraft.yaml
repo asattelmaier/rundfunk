@@ -1,11 +1,13 @@
 name: rundfunk
 base: core24
 adopt-info: rundfunk
-summary: Unofficial Deutschlandradio GNU/Linux client
+summary: Unofficial Deutschlandradio player for your Linux system tray
 description: |
-  Unofficial Deutschlandradio GNU/Linux client for the Deutschlandradio
-  channels Deutschlandfunk, Deutschlandfunk Kultur, and
-  Deutschlandfunk Nova.
+  Listen to Deutschlandfunk, Deutschlandfunk Kultur and Deutschlandfunk
+  Nova live from your Linux system tray.
+
+  Rundfunk is an unofficial client and not affiliated with
+  Deutschlandradio.
 
 grade: stable
 confinement: strict
