@@ -29,7 +29,7 @@ rundfunk = "rundfunk.__main__:cli"
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]

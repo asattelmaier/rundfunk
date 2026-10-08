@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 
 class Logger:
@@ -7,7 +6,7 @@ class Logger:
         self._context = context
 
     @staticmethod
-    def setup(log_level: Optional[str] = None) -> None:
+    def setup(log_level: str | None = None) -> None:
         if log_level is None:
             return
 

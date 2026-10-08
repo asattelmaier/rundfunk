@@ -1,6 +1,5 @@
 import os
 import sys
-from typing import Dict
 
 _ENV_REEXEC_MARKER = "RUNDFUNK_ENV_SANITIZED"
 _UNSET_IF_SNAP_ENV_VARS = (
@@ -63,7 +62,7 @@ def _has_snap_pollution() -> bool:
     )
 
 
-def _restore_or_filter_pathlike_env(env: Dict[str, str], name: str) -> None:
+def _restore_or_filter_pathlike_env(env: dict[str, str], name: str) -> None:
     original_name = f"{name}_VSCODE_SNAP_ORIG"
     if original_name in env:
         env[name] = env[original_name]
