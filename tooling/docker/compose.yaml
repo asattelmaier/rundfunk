@@ -1,0 +1,45 @@
+name: rundfunk
+
+services:
+  tools:
+    build:
+      context: ../..
+      dockerfile: tooling/docker/Dockerfile
+    image: rundfunk-dev:local
+    user: "${RUNDFUNK_UID:?use tooling/scripts}:${RUNDFUNK_GID:?use tooling/scripts}"
+    init: true
+    network_mode: bridge
+    cap_drop: [ALL]
+    # SELinux hosts would otherwise block the repo bind mount.
+    security_opt: [no-new-privileges:true, label=disable]
+    working_dir: ${RUNDFUNK_REPO_ROOT:?use tooling/scripts}
+    environment:
+      HOME: /tmp
+      PYTHONPATH: ${RUNDFUNK_REPO_ROOT}/src
+    volumes:
+      # Same path as on the host: the tray icon reaches the shell as a file path.
+      - type: bind
+        source: ../..
+        target: ${RUNDFUNK_REPO_ROOT}
+
+  app:
+    extends:
+      service: tools
+    entrypoint: ["python", "-m", "rundfunk"]
+    # The host session bus rejects Docker's default AppArmor profile.
+    security_opt: [apparmor=unconfined]
+    environment:
+      XDG_RUNTIME_DIR: ${RUNDFUNK_RUNTIME_DIR:?use tooling/scripts}
+      DBUS_SESSION_BUS_ADDRESS: unix:path=${RUNDFUNK_RUNTIME_DIR}/bus
+      PULSE_SERVER: unix:${RUNDFUNK_RUNTIME_DIR}/pulse/native
+      WAYLAND_DISPLAY:
+      DISPLAY:
+      XAUTHORITY:
+    volumes:
+      - type: bind
+        source: ${RUNDFUNK_RUNTIME_DIR}
+        target: ${RUNDFUNK_RUNTIME_DIR}
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: true

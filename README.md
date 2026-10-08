@@ -9,32 +9,20 @@ and Deutschlandfunk Nova.
   <img src="https://drive.google.com/uc?export=view&id=15w5cfdpoHcn0kl6izspzTgR-6ywPxkbO" alt="Rundfunk App">
 </p>
 
-## Prerequisites
-
-* Python `3.12.3` for local development via [uv](https://docs.astral.sh/uv/)
-* [snapcraft](https://snapcraft.io/snapcraft)
-* system packages:
-  * `python3-gi`
-  * [gir1.2-appindicator3-0.1](https://packages.ubuntu.com/impish/gir1.2-appindicator3-0.1)
-  * [python3-gst-1.0](https://packages.ubuntu.com/bionic/python3-gst-1.0)
-
-`uv` manages the Python package dependency (`pydbus`); the GTK/GStreamer bindings stay system-managed.
-The packaged app remains compatible with Python `3.8+`, because the current Snap targets `core20`.
-
-## Setup
+## Development
 
 ```bash
-sudo apt install python3-gi gir1.2-appindicator3-0.1 python3-gst-1.0
-uv sync
-```
-
-## Run
-
-```bash
-uv run rundfunk
+tooling/scripts/run.sh               # start the tray app; extra args go to rundfunk, e.g. --log-level debug
+tooling/scripts/test.sh              # run pytest; extra args go to pytest
+tooling/scripts/lint.sh              # run ruff and ShellCheck
+tooling/scripts/format.sh            # apply ruff fixes and formatting
+tooling/scripts/shell.sh             # open a shell in the dev container
+tooling/scripts/resolve_apt_pins.sh  # print the Dockerfile's apt pins for today's Ubuntu snapshot
 ```
 
 ## Build Snap
+
+Requires [snapcraft](https://snapcraft.io/snapcraft).
 
 ```bash
 rm -f rundfunk_*.snap
