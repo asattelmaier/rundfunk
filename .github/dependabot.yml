@@ -1,0 +1,59 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    versioning-strategy: increase
+    allow:
+      - dependency-type: all
+    cooldown:
+      default-days: 7
+    groups:
+      python:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - ruff
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: docker
+    directory: /tooling/docker
+    schedule:
+      interval: monthly
+      time: "06:00"
+      timezone: Europe/Berlin
+    ignore:
+      # Stay on noble: python3.12 and the apt snapshot suites depend on it.
+      - dependency-name: ubuntu
+        versions:
+          - ">= 24.05"
+    cooldown:
+      default-days: 7
+    groups:
+      dev-image:
+        patterns:
+          - "*"

@@ -58,7 +58,7 @@ jobs:
           enable-cache: true
 
       - name: Sync locked environment
-        run: uv sync --frozen
+        run: uv sync --locked
 
       - name: Check CLI version
         run: uv run python -m rundfunk --version
