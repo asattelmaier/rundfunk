@@ -1,5 +1,5 @@
 import time
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from rundfunk.event_bus import EventBus
 from rundfunk.gui.menu.menu_item import MenuItem
@@ -29,13 +29,13 @@ class MenuHandler:
         self._items: [MenuItem] = []
         self._event_bus: EventBus = event_bus
         self._quit_handler: Callable = quit_handler
-        self._menu: Optional[Menu] = None
+        self._menu: Menu | None = None
         self._is_ready: bool = False
-        self._active_channel: Optional[Channel] = None
-        self._session_channel: Optional[Channel] = None
-        self._root_menu_closed_at: Optional[float] = None
+        self._active_channel: Channel | None = None
+        self._session_channel: Channel | None = None
+        self._root_menu_closed_at: float | None = None
         self._dbus_connection = None
-        self._dbus_filter_id: Optional[int] = None
+        self._dbus_filter_id: int | None = None
 
     @staticmethod
     def create(event_bus: EventBus, quit_handler: Callable) -> "MenuHandler":
@@ -73,7 +73,7 @@ class MenuHandler:
         submenu.connect("selection-done", self._close_preview, menu_item)
         self._items.append(menu_item)
 
-    def _get_item_by_channel(self, channel: Channel) -> Optional[MenuItem]:
+    def _get_item_by_channel(self, channel: Channel) -> MenuItem | None:
         for item in self._items:
             if item.channel.value == channel.value:
                 return item

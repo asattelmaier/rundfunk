@@ -1,5 +1,3 @@
-from typing import Optional
-
 from rundfunk.event_bus import EventBus
 from rundfunk.logger import Logger
 from rundfunk.radio.audio_player import AudioPlayer, OnTags, Tags
@@ -72,7 +70,7 @@ class Radio:
                 title = event.tagList.get_string(tag)[1]
                 self._publish_meta_data_update(title)
 
-    def _publish_meta_data_update(self, title: Optional[str] = None) -> None:
+    def _publish_meta_data_update(self, title: str | None = None) -> None:
         if not isinstance(title, str):
             return
 
